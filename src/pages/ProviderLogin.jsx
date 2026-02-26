@@ -21,7 +21,7 @@ function ProviderLogin() {
       );
 
       localStorage.setItem("token", res.data.token);
-      navigate("/");
+      navigate("/provider-dashboard");
     } catch {
       alert("Invalid credentials");
     }

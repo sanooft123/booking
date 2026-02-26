@@ -14,6 +14,9 @@ import ProviderDashboard from "./pages/ProviderDashboard.jsx";
 import Profile from "./pages/Profile.jsx";
 import CategoryPage from "./pages/CategoryPage.jsx";
 import ProvidersPage from "./pages/ProvidersPage.jsx";
+import HomePage from "./pages/Home.jsx";
+
+
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -28,7 +31,8 @@ function AnimatedRoutes() {
         transition={{ duration: 0.3 }}
       >
         <Routes location={location}>
-          <Route path="/" element={<Services />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/services" element={<Services />} />
           <Route path="/provider-register" element={<ProviderRegister />} />
           <Route path="/provider-login" element={<ProviderLogin />} />
           <Route path="/customer-login" element={<CustomerLogin />} />
@@ -52,7 +56,7 @@ function App() {
     <Router>
       <div className="flex">
         <Sidebar />
-        <main className="flex-1 bg-gray-100 min-h-screen p-6 mt-10">
+        <main className="flex-1 bg-gray-100 min-h-screen mt-10">
           <AnimatedRoutes />
         </main>
       </div>
