@@ -11,10 +11,22 @@ import {
   MapPin
 } from "lucide-react";
 import { getUserFromToken } from "../utils/auth";
+import { useState } from "react";
+import AuthDrawer from "../components/AuthDrawer";
 
 function Navbar() {
   const location = useLocation();
   const user = getUserFromToken();
+
+  const [showAuth, setShowAuth] = useState(false);
+
+  const [city, setCity] = useState(
+    localStorage.getItem("userLocation") || "Select Location"
+  );
+  const [loading, setLoading] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [results, setResults] = useState([]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -26,14 +38,13 @@ function Navbar() {
   if (!user) {
     menuItems = [
       { name: "Home", path: "/", icon: <Home size={20} /> },
-      { name: "Services", path: "/services", icon: <Briefcase size={20} /> },
-      { name: "Login", path: "/customer-login", icon: <LogIn size={20} /> },
-      { name: "Register", path: "/customer-register", icon: <UserPlus size={20} /> }
+      { name: "Services", path: "/services", icon: <Briefcase size={20} /> }
     ];
   } else if (user.role === "provider") {
     menuItems = [
       { name: "Dashboard", path: "/provider-dashboard", icon: <LayoutDashboard size={20} /> },
       { name: "Services", path: "/my-services", icon: <Briefcase size={20} /> },
+      { name: "Manage Slots", path: "/provider/manage-availability", icon: <Calendar size={20} /> },
       { name: "Bookings", path: "/my-bookings", icon: <Calendar size={20} /> },
       { name: "Profile", path: "/profile", icon: <User size={20} /> }
     ];
@@ -48,14 +59,18 @@ function Navbar() {
 
   return (
     <>
-      {/* ================= DESKTOP TOP NAV ================= */}
-      <div className="hidden md:flex fixed top-0 left-0 w-full bg-white shadow z-50 px-8 py-4 items-center justify-between">
+      {/* ================= DESKTOP NAV ================= */}
+      <div className="hidden md:flex fixed top-0 left-0 w-full bg-white shadow z-50 px-8 py-4 items-center">
 
-        <h1 className="text-xl font-bold text-indigo-600">
-          BookingApp
-        </h1>
+        {/* Logo */}
+        <div className="flex-1">
+          <h1 className="text-xl font-bold text-indigo-600">
+            BookingApp
+          </h1>
+        </div>
 
-        <div className="flex items-center gap-6 justify-center">
+        {/* Center Menu */}
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-6">
           {menuItems.map((item, index) => {
             const isActive = location.pathname === item.path;
 
@@ -75,28 +90,32 @@ function Navbar() {
             );
           })}
 
-          {user && (
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 text-red-500 hover:text-red-600 font-medium"
-            >
-              <LogOut size={18} />
-              Logout
-            </button>
-          )}
+          {/* Login/Register OR Logout */}
+          {!user && (
+          <button
+            onClick={() => setShowAuth(true)}
+            className="flex items-center gap-2 text-gray-600 hover:text-indigo-600"
+          >
+            <LogIn size={20} />
+            Login
+          </button>
+        )}
         </div>
 
-        <div className="hidden md:flex items-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 border rounded-full text-gray-700 text-sm bg-gray-50">
-              <MapPin className="w-4 h-4 text-gray-500" />
-              New York, NY
-            </div>
+        {/* Location */}
+        <div className="flex-1 flex justify-end">
+          <div
+            onClick={() => setShowLocationModal(true)}
+            className="flex items-center gap-2 px-4 py-2 border rounded-full text-gray-700 text-sm bg-gray-50 cursor-pointer"
+          >
+            <MapPin className="w-4 h-4 text-gray-500" />
+            {loading ? "Detecting..." : city}
           </div>
+        </div>
       </div>
 
       {/* ================= MOBILE BOTTOM NAV ================= */}
       <div className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t shadow-inner z-50 flex justify-around py-2">
-
         {menuItems.map((item, index) => {
           const isActive = location.pathname === item.path;
 
@@ -105,9 +124,7 @@ function Navbar() {
               key={index}
               to={item.path}
               className={`flex flex-col items-center text-xs ${
-                isActive
-                  ? "text-indigo-600"
-                  : "text-gray-500"
+                isActive ? "text-indigo-600" : "text-gray-500"
               }`}
             >
               {item.icon}
@@ -115,7 +132,24 @@ function Navbar() {
             </Link>
           );
         })}
+
+        {!user && (
+          <button
+            onClick={() => setShowAuth(true)}
+            className="flex flex-col items-center text-xs text-gray-500"
+          >
+            <LogIn size={20} />
+            Login
+          </button>
+        )}
       </div>
+
+      {/* ================= AUTH DRAWER ================= */}
+      <AuthDrawer
+        isOpen={showAuth}
+        onClose={() => setShowAuth(false)}
+        onSuccess={() => window.location.reload()}
+      />
     </>
   );
 }

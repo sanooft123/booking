@@ -15,6 +15,10 @@ import Profile from "./pages/Profile.jsx";
 import CategoryPage from "./pages/CategoryPage.jsx";
 import ProvidersPage from "./pages/ProvidersPage.jsx";
 import HomePage from "./pages/Home.jsx";
+import ScrollToTop from "./components/ScrollToTop.jsx";
+import BookingPage from "./pages/BookingPage.jsx";
+import ConfirmBookingPage from "./pages/ConfirmBookingPage.jsx";
+import ProviderAvailabilityPage from "./pages/ProviderAvailabilityPage.jsx";
 
 
 
@@ -38,6 +42,7 @@ function AnimatedRoutes() {
           <Route path="/customer-login" element={<CustomerLogin />} />
           <Route path="/customer-register" element={<CustomerRegister />} />
           <Route path="/create-service" element={<CreateService />} />
+          <Route path="/create-service/:id" element={<CreateService />} />
           <Route path="/book/:id" element={<BookService />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/my-services" element={<MyServices />} />
@@ -45,6 +50,9 @@ function AnimatedRoutes() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/services/:category" element={<CategoryPage />} />
           <Route path="/services/:category/:service" element={<ProvidersPage />} />
+          <Route path="/booking/:id" element={<BookingPage />} />
+          <Route path="/confirm-booking/:id" element={<ConfirmBookingPage />} />
+          <Route path="/provider/manage-availability" element={<ProviderAvailabilityPage />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
@@ -55,6 +63,7 @@ function App() {
   return (
     <Router>
       <div className="flex">
+        <ScrollToTop/>
         <Sidebar />
         <main className="flex-1 bg-gray-100 min-h-screen mt-10">
           <AnimatedRoutes />

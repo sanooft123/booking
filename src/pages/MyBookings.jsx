@@ -1,38 +1,90 @@
-import { useState } from "react";
-import { Calendar, Clock, MapPin, CheckCircle, AlertCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  CheckCircle,
+  AlertCircle
+} from "lucide-react";
 import Footer from "../components/Footer";
 
-const bookingsData = [
-  {
-    id: 1,
-    title: "Deep House Cleaning",
-    provider: "CleanPro Services",
-    date: "Mar 2, 2026",
-    time: "10:00 AM",
-    location: "Your Location",
-    price: 120,
-    status: "upcoming",
-    paymentStatus: "confirmed",
-  },
-  {
-    id: 2,
-    title: "Electrical Installation",
-    provider: "BrightSpark Electric",
-    date: "Mar 5, 2026",
-    time: "2:00 PM",
-    location: "Your Location",
-    price: 85,
-    status: "upcoming",
-    paymentStatus: "pending",
-  },
-];
-
 export default function MyBookings() {
-  const [activeTab, setActiveTab] = useState("upcoming");
 
-  const filteredBookings = bookingsData.filter(
-    (booking) => booking.status === activeTab
+  const [bookings, setBookings] = useState([]);
+  const [activeTab, setActiveTab] = useState("upcoming");
+  const [loading, setLoading] = useState(true);
+
+  /* ================= FETCH BOOKINGS ================= */
+  const fetchBookings = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/bookings/my",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        }
+      );
+
+      setBookings(res.data);
+      setLoading(false);
+
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
+  };
+
+  /* ================= AUTO REFRESH ================= */
+  useEffect(() => {
+    fetchBookings();
+
+    const interval = setInterval(() => {
+      fetchBookings();
+    }, 5000); // refresh every 5 sec
+
+    return () => clearInterval(interval);
+  }, []);
+
+  /* ================= STATUS MAPPING ================= */
+  const mapStatusToTab = (status) => {
+    if (status === "completed") return "completed";
+    if (status === "cancelled") return "cancelled";
+    return "upcoming"; // pending, accepted, in-progress
+  };
+
+  const filteredBookings = bookings.filter(
+    (booking) => mapStatusToTab(booking.status) === activeTab
   );
+
+  /* ================= CANCEL BOOKING ================= */
+  const cancelBooking = async (id) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/bookings/${id}/status`,
+        { status: "cancelled" },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        }
+      );
+
+      fetchBookings();
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading bookings...
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -67,19 +119,21 @@ export default function MyBookings() {
 
         {/* Booking Cards */}
         <div className="space-y-6">
+
           {filteredBookings.map((booking) => (
             <div
-              key={booking.id}
+              key={booking._id}
               className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6"
             >
+
               {/* Left Info */}
               <div className="flex-1">
                 <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                  {booking.title}
+                  {booking.service?.title}
                 </h3>
 
                 <p className="text-gray-500 mb-4">
-                  {booking.provider}
+                  {booking.provider?.shopName}
                 </p>
 
                 <div className="flex flex-wrap gap-6 text-gray-600 text-sm">
@@ -90,30 +144,35 @@ export default function MyBookings() {
 
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    {booking.time}
+                    {booking.timeSlot}
                   </div>
 
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    {booking.location}
+                    {booking.provider?.location}
                   </div>
                 </div>
               </div>
 
-              {/* Status + Actions */}
+              {/* Status + Price */}
               <div className="flex flex-col lg:items-end gap-4">
 
-                {/* Status Badge */}
+                {/* Booking Status */}
                 <div>
-                  {booking.paymentStatus === "confirmed" ? (
+                  {booking.status === "completed" ? (
                     <span className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium">
                       <CheckCircle className="w-4 h-4" />
-                      Confirmed
+                      Completed
+                    </span>
+                  ) : booking.status === "cancelled" ? (
+                    <span className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-4 py-1 rounded-full text-sm font-medium">
+                      <AlertCircle className="w-4 h-4" />
+                      Cancelled
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-medium">
                       <AlertCircle className="w-4 h-4" />
-                      Pending
+                      {booking.status}
                     </span>
                   )}
                 </div>
@@ -121,19 +180,22 @@ export default function MyBookings() {
                 {/* Price */}
                 <div className="text-right">
                   <p className="text-2xl font-semibold text-gray-900">
-                    ${booking.price}
+                    ₹{booking.service?.price}
                   </p>
                   <p className="text-gray-500 text-sm">Total</p>
                 </div>
 
-                {/* Buttons */}
+                {/* Actions */}
                 <div className="flex gap-3">
                   <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
                     View Details
                   </button>
 
-                  {activeTab === "upcoming" && (
-                    <button className="border px-6 py-2 rounded-lg hover:bg-gray-100 transition">
+                  {booking.status === "pending" && (
+                    <button
+                      onClick={() => cancelBooking(booking._id)}
+                      className="border px-6 py-2 rounded-lg hover:bg-gray-100 transition"
+                    >
                       Cancel Booking
                     </button>
                   )}
@@ -148,11 +210,11 @@ export default function MyBookings() {
               No {activeTab} bookings found.
             </div>
           )}
-        </div>
 
+        </div>
       </div>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 }

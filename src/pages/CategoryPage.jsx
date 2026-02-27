@@ -1,102 +1,95 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Star, Search } from "lucide-react";
-
-const servicesData = {
-  home: {
-    title: "Home Services",
-    services: [
-      {
-        id: 1,
-        name: "Electrician",
-        description: "Wiring, switch repair & installation",
-        price: "₹299 onwards",
-        rating: 4.7,
-        image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952"
-      },
-      {
-        id: 2,
-        name: "Plumber",
-        description: "Leak fixing & bathroom fittings",
-        price: "₹249 onwards",
-        rating: 4.6,
-        image: "https://images.unsplash.com/photo-1607478900766-efe13248b125"
-      },
-      {
-        id: 3,
-        name: "AC Repair",
-        description: "AC service & gas refill",
-        price: "₹499 onwards",
-        rating: 4.8,
-        image: "https://images.unsplash.com/photo-1621905251918-48416bd8575a"
-      }
-    ]
-  },
-
-  beauty: {
-    title: "Beauty & Salon",
-    services: [
-      {
-        id: 1,
-        name: "Salon at Home",
-        description: "Facial, cleanup & hair care",
-        price: "₹799 onwards",
-        rating: 4.9,
-        image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e"
-      },
-      {
-        id: 2,
-        name: "Bridal Makeup",
-        description: "Professional bridal packages",
-        price: "₹4999 onwards",
-        rating: 4.8,
-        image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9"
-      }
-    ]
-  }
-};
+import { Search } from "lucide-react";
+import AuthDrawer from "../components/AuthDrawer";
 
 const CategoryPage = () => {
   const { category } = useParams();
   const navigate = useNavigate();
+
+  const [services, setServices] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [showAuth, setShowAuth] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
 
-  const categoryData = servicesData[category];
+  const location = localStorage.getItem("selectedLocation") || "";
 
-  if (!categoryData) {
+  /* ================= FETCH SERVICES ================= */
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+
+        const res = await fetch(
+          `http://localhost:5000/api/services?category=${category}&location=${location}`
+        );
+
+        const data = await res.json();
+        setServices(data);
+      } catch (error) {
+        console.error("Failed to fetch services:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, [category, location]);
+
+  /* ================= FILTER SEARCH ================= */
+  const filteredServices = services.filter((service) =>
+    service.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  /* ================= HANDLE BOOK ================= */
+  const handleBook = (serviceId) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setSelectedService(serviceId);
+      setShowAuth(true);
+    } else {
+      navigate(`/booking/${serviceId}`);
+    }
+  };
+
+  /* ================= AFTER LOGIN SUCCESS ================= */
+  const handleAuthSuccess = () => {
+    setShowAuth(false);
+
+    if (selectedService) {
+      navigate(`/booking/${selectedService}`);
+      setSelectedService(null);
+    }
+  };
+
+  /* ================= LOADING STATE ================= */
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <h1 className="text-2xl font-bold">Category Not Found</h1>
+        <h1 className="text-xl font-semibold">Loading services...</h1>
       </div>
     );
   }
 
-  const filteredServices = categoryData.services.filter((service) =>
-    service.name.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
     <div className="bg-gray-50 min-h-screen">
 
-      {/* Hero Section */}
+      {/* ================= HERO ================= */}
       <section className="bg-gradient-to-r from-indigo-700 to-purple-600 text-white py-16 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold">
-          {categoryData.title}
+        <h1 className="text-4xl md:text-5xl font-bold capitalize">
+          {category} Services
         </h1>
         <p className="mt-3 text-lg">
-          Book trusted professionals near you.
+          Showing services in {location || "all locations"}
         </p>
       </section>
 
-      {/* Content */}
+      {/* ================= CONTENT ================= */}
       <section className="max-w-6xl mx-auto px-6 py-12">
 
-        {/* Breadcrumb */}
-        <p className="text-gray-500 mb-6 text-sm">
-          Home / Services / <span className="capitalize">{category}</span>
-        </p>
-
-        {/* Search Bar */}
+        {/* Search */}
         <div className="relative mb-10">
           <Search className="absolute left-4 top-3 text-gray-400" size={18} />
           <input
@@ -108,51 +101,57 @@ const CategoryPage = () => {
           />
         </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        {/* No Services */}
+        {filteredServices.length === 0 && (
+          <div className="text-center text-gray-500">
+            No services available in this category.
+          </div>
+        )}
+
+        {/* ================= SERVICE CARDS ================= */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredServices.map((service) => (
             <div
-              key={service.id}
-              className="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 overflow-hidden group"
+              key={service._id}
+              className="bg-white rounded-xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden flex"
             >
               {/* Image */}
-              <div className="h-48 overflow-hidden">
+              <div className="relative w-1/3 h-40 bg-gray-100">
                 <img
-                  src={service.image}
-                  alt={service.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                  src={service.image || "/default-service.jpg"}
+                  alt={service.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) =>
+                    (e.target.src = "/default-service.jpg")
+                  }
                 />
+
+                <div className="absolute bottom-2 left-2 bg-black/70 text-white px-3 py-1 rounded-lg text-sm font-semibold">
+                  ₹ {service.price}
+                </div>
               </div>
 
               {/* Content */}
-              <div className="p-6 text-center">
-                <h3 className="text-xl font-semibold">
-                  {service.name}
-                </h3>
+              <div className="p-4 w-2/3 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {service.title}
+                  </h3>
 
-                <p className="text-gray-500 text-sm mt-2">
-                  {service.description}
-                </p>
+                  <p className="text-gray-500 text-sm mt-2 line-clamp-2">
+                    {service.description}
+                  </p>
 
-                {/* Rating */}
-                <div className="flex justify-center items-center gap-1 mt-3 text-yellow-500">
-                  <Star size={16} fill="currentColor" />
-                  <span className="text-sm text-gray-700">
-                    {service.rating}
-                  </span>
+                  <p className="text-xs text-gray-400 mt-2">
+                    {service.provider?.shopName || service.provider?.name}
+                  </p>
                 </div>
 
-                <p className="mt-2 font-semibold text-indigo-600">
-                  {service.price}
-                </p>
-
                 <button
-                  onClick={() =>
-                    navigate(`/services/${category}/${service.name.toLowerCase().replace(/\s+/g, "-")}`)
-                    }
-                  className="mt-4 bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition"
+                  onClick={() => handleBook(service._id)}
+                  className="mt-3 bg-indigo-600 text-white text-sm py-2 rounded-lg hover:bg-indigo-700 transition"
                 >
-                  Book Now
+                  Book
                 </button>
               </div>
             </div>
@@ -160,19 +159,12 @@ const CategoryPage = () => {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="bg-indigo-700 text-white text-center py-16 mt-16">
-        <h2 className="text-3xl font-bold">
-          Need Assistance?
-        </h2>
-        <p className="mt-3">
-          Our support team is available 24/7.
-        </p>
-
-        <button className="mt-6 bg-white text-indigo-700 px-6 py-3 rounded-full font-semibold shadow hover:scale-105 transition">
-          Contact Support
-        </button>
-      </section>
+      {/* ================= AUTH DRAWER ================= */}
+      <AuthDrawer
+        isOpen={showAuth}
+        onClose={() => setShowAuth(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 };

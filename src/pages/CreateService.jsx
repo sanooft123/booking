@@ -1,77 +1,207 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
 function CreateService() {
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    price: "",
-    category: ""
-  });
+  const navigate = useNavigate();
+  const { id } = useParams(); // ✅ detect edit mode
+  const token = localStorage.getItem("token");
 
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("");
+  const [image, setImage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+
+  const categories = [
+    { key: "home", label: "Home Services" },
+    { key: "fitness", label: "Fitness & Gym" },
+    { key: "beauty", label: "Beauty & Salon" },
+    { key: "healthcare", label: "Healthcare" },
+    { key: "automobile", label: "Automobile Services" },
+    { key: "laundry", label: "Laundry Services" },
+    { key: "entertainment", label: "Entertainment" },
+    { key: "repairs", label: "Repairs & Maintenance" }
+  ];
+
+  /* ================= LOAD SERVICE IF EDIT ================= */
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchService = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/services/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+
+        const service = res.data;
+
+        setTitle(service.title);
+        setDescription(service.description);
+        setPrice(service.price);
+        setCategory(service.category);
+        setImage(service.image || "");
+        setIsEdit(true);
+
+      } catch (error) {
+        alert("Failed to load service");
+      }
+    };
+
+    fetchService();
+  }, [id, token]);
+
+  /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      await axios.post(
-        "http://localhost:5000/api/services",
-        form,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
-        }
-      );
+    if (!category) {
+      alert("Please select a category");
+      return;
+    }
 
-      alert("Service created successfully!");
-    } catch {
-      alert("Failed to create service");
+    try {
+      setLoading(true);
+
+      if (isEdit) {
+        // UPDATE
+        await axios.put(
+          `http://localhost:5000/api/services/${id}`,
+          {
+            title,
+            description,
+            price,
+            category,
+            image
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+
+        alert("Service updated successfully!");
+
+      } else {
+        // CREATE
+        await axios.post(
+          "http://localhost:5000/api/services",
+          {
+            title,
+            description,
+            price,
+            category,
+            image
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+
+        alert("Service created successfully!");
+      }
+
+      setLoading(false);
+      navigate("/my-services");
+
+    } catch (error) {
+      setLoading(false);
+      alert("Operation failed");
     }
   };
 
   return (
-    <div className="p-8 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Create Service</h2>
+    <div className="min-h-screen bg-gray-50 pt-24 pb-20 px-6">
+      <div className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-md">
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+        <h2 className="text-3xl font-bold mb-8 text-gray-800">
+          {isEdit ? "Edit Service" : "Create New Service"}
+        </h2>
 
-        <input
-          placeholder="Service Title"
-          className="w-full p-3 border rounded-xl"
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
-          required
-        />
+        <form onSubmit={handleSubmit} className="space-y-5">
 
-        <textarea
-          placeholder="Description"
-          className="w-full p-3 border rounded-xl"
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-          required
-        />
+          <input
+            type="text"
+            placeholder="Service Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500"
+          />
 
-        <input
-          type="number"
-          placeholder="Price"
-          className="w-full p-3 border rounded-xl"
-          onChange={(e) => setForm({ ...form, price: e.target.value })}
-          required
-        />
+          <textarea
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            rows="4"
+            className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500"
+          />
 
-        <input
-          placeholder="Category"
-          className="w-full p-3 border rounded-xl"
-          onChange={(e) => setForm({ ...form, category: e.target.value })}
-          required
-        />
+          <input
+            type="number"
+            placeholder="Price (₹)"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            required
+            className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500"
+          />
 
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 text-white p-3 rounded-xl"
-        >
-          Create Service
-        </button>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+            className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat) => (
+              <option key={cat.key} value={cat.key}>
+                {cat.label}
+              </option>
+            ))}
+          </select>
 
-      </form>
+          <input
+            type="text"
+            placeholder="Image URL"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+            className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500"
+          />
+
+          {image && (
+            <img
+              src={image}
+              alt="preview"
+              className="w-full h-40 object-cover rounded-lg border"
+              onError={(e) => (e.target.src = "/default-service.jpg")}
+            />
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 rounded-lg text-white font-medium ${
+              loading
+                ? "bg-gray-400"
+                : "bg-indigo-600 hover:bg-indigo-700"
+            }`}
+          >
+            {loading
+              ? isEdit
+                ? "Updating..."
+                : "Creating..."
+              : isEdit
+              ? "Update Service"
+              : "Create Service"}
+          </button>
+
+        </form>
+      </div>
     </div>
   );
 }
