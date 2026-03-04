@@ -5,15 +5,17 @@ import {
   Clock,
   MapPin,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Hash
 } from "lucide-react";
 import Footer from "../components/Footer";
 
 export default function MyBookings() {
-
+  const [bookingToCancel, setBookingToCancel] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [activeTab, setActiveTab] = useState("upcoming");
   const [loading, setLoading] = useState(true);
+  
 
   /* ================= FETCH BOOKINGS ================= */
   const fetchBookings = async () => {
@@ -29,14 +31,13 @@ export default function MyBookings() {
 
       setBookings(res.data);
       setLoading(false);
-
     } catch (error) {
       console.error(error);
       setLoading(false);
     }
   };
 
-  /* ================= AUTO REFRESH ================= */
+  /* ================= REALTIME AUTO REFRESH ================= */
   useEffect(() => {
     fetchBookings();
 
@@ -47,23 +48,57 @@ export default function MyBookings() {
     return () => clearInterval(interval);
   }, []);
 
-  /* ================= STATUS MAPPING ================= */
-  const mapStatusToTab = (status) => {
-    if (status === "completed") return "completed";
-    if (status === "cancelled") return "cancelled";
-    return "upcoming"; // pending, accepted, in-progress
+
+  const filteredBookings = bookings.filter((booking) => {
+    if (activeTab === "upcoming") {
+      return booking.status !== "completed" && booking.status !== "cancelled";
+    }
+    return booking.status === activeTab;
+  });
+
+  // cancel filter
+  const canCancel = (booking) => {
+    const startTimeString = booking.timeSlot.split("-")[0];
+
+    const convertTo24Hour = (time) => {
+      const match = time.match(/(\d+):(\d+)(AM|PM)/);
+      let hours = parseInt(match[1]);
+      const minutes = parseInt(match[2]);
+      const period = match[3];
+
+      if (period === "PM" && hours !== 12) hours += 12;
+      if (period === "AM" && hours === 12) hours = 0;
+
+      return { hours, minutes };
+    };
+
+    const { hours, minutes } = convertTo24Hour(startTimeString);
+
+    // 🔥 IMPORTANT: Create local date properly
+    const [year, month, day] = booking.date.split("-");
+
+    const bookingDateTime = new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+      hours,
+      minutes,
+      0
+    );
+
+    const now = new Date();
+
+    const diffInHours = (bookingDateTime - now) / (1000 * 60 * 60);
+
+    return diffInHours >= 4;
   };
 
-  const filteredBookings = bookings.filter(
-    (booking) => mapStatusToTab(booking.status) === activeTab
-  );
-
-  /* ================= CANCEL BOOKING ================= */
+  /* ================= CANCEL ================= */
   const cancelBooking = async (id) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/bookings/${id}/status`,
-        { status: "cancelled" },
+        `http://localhost:5000/api/bookings/${id}/cancel`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -71,17 +106,27 @@ export default function MyBookings() {
         }
       );
 
+      setBookingToCancel(null);
       fetchBookings();
-
     } catch (error) {
-      console.error(error);
+      alert(error.response?.data?.message || "Cancellation failed");
     }
+  };
+
+
+  /* ================= DATE FORMAT ================= */
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    });
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading bookings...
+      <div className="min-h-screen flex items-center justify-center text-lg">
+        Loading your bookings...
       </div>
     );
   }
@@ -96,7 +141,7 @@ export default function MyBookings() {
             My Bookings
           </h1>
           <p className="text-gray-600 mt-2">
-            View and manage your service bookings
+            Track and manage your service appointments
           </p>
         </div>
 
@@ -117,65 +162,78 @@ export default function MyBookings() {
           ))}
         </div>
 
-        {/* Booking Cards */}
+        {/* Cards */}
         <div className="space-y-6">
-
           {filteredBookings.map((booking) => (
             <div
               key={booking._id}
-              className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+              className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col lg:flex-row gap-6 justify-between"
             >
+              {/* LEFT */}
+              <div className="flex gap-6 flex-1">
 
-              {/* Left Info */}
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                  {booking.service?.title}
-                </h3>
+                {/* Service Image */}
+                <img
+                  src={booking.service?.image}
+                  alt="service"
+                  className="w-28 h-28 rounded-xl object-cover border"
+                />
 
-                <p className="text-gray-500 mb-4">
-                  {booking.provider?.shopName}
-                </p>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {booking.service?.title}
+                  </h3>
 
-                <div className="flex flex-wrap gap-6 text-gray-600 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    {booking.date}
+                  <p className="text-gray-500">
+                    {booking.provider?.shopName}
+                  </p>
+
+                  {/* Booking ID */}
+                  <div className="flex items-center gap-2 text-gray-400 text-sm mt-2">
+                    <Hash className="w-4 h-4" />
+                    {booking._id.slice(-6)}
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    {booking.timeSlot}
-                  </div>
+                  {/* Details */}
+                  <div className="flex flex-wrap gap-6 text-gray-600 text-sm mt-4">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      {formatDate(booking.date)}
+                    </div>
 
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    {booking.provider?.location}
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      {booking.timeSlot}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      {booking.provider?.location}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Status + Price */}
+              {/* RIGHT */}
               <div className="flex flex-col lg:items-end gap-4">
 
-                {/* Booking Status */}
-                <div>
-                  {booking.status === "completed" ? (
-                    <span className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium">
-                      <CheckCircle className="w-4 h-4" />
-                      Completed
-                    </span>
-                  ) : booking.status === "cancelled" ? (
-                    <span className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-4 py-1 rounded-full text-sm font-medium">
-                      <AlertCircle className="w-4 h-4" />
-                      Cancelled
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-medium">
-                      <AlertCircle className="w-4 h-4" />
-                      {booking.status}
-                    </span>
-                  )}
-                </div>
+                {/* Status */}
+                {booking.status === "completed" ? (
+                  <span className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium">
+                    <CheckCircle className="w-4 h-4" />
+                    Completed
+                  </span>
+                ) : booking.status === "cancelled" ? (
+                  <span className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-4 py-1 rounded-full text-sm font-medium">
+                    <AlertCircle className="w-4 h-4" />
+                    Cancelled
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-medium">
+                    <AlertCircle className="w-4 h-4" />
+                    {booking.status}
+                  </span>
+                )}
 
                 {/* Price */}
                 <div className="text-right">
@@ -186,33 +244,67 @@ export default function MyBookings() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-3">
-                  <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
-                    View Details
+                {booking.status === "pending" && (
+                  <button
+                    onClick={() => setBookingToCancel(booking)}
+                    disabled={!canCancel(booking)}
+                    className={`px-6 py-2 rounded-lg transition ${
+                      canCancel(booking)
+                        ? "border hover:bg-gray-100"
+                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    }`}
+                  >
+                    {canCancel(booking)
+                      ? "Cancel Booking"
+                      : "Cannot Cancel (<4 hrs)"}
                   </button>
-
-                  {booking.status === "pending" && (
-                    <button
-                      onClick={() => cancelBooking(booking._id)}
-                      className="border px-6 py-2 rounded-lg hover:bg-gray-100 transition"
-                    >
-                      Cancel Booking
-                    </button>
-                  )}
-                </div>
-
+                )}
               </div>
             </div>
           ))}
 
           {filteredBookings.length === 0 && (
-            <div className="text-center text-gray-500 py-20">
+            <div className="text-center text-gray-500 py-20 text-lg">
               No {activeTab} bookings found.
             </div>
           )}
-
         </div>
       </div>
+
+      {/* ================= CANCEL CONFIRMATION MODAL ================= */}
+      {bookingToCancel && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-lg p-8 w-[90%] max-w-md">
+            <h2 className="text-xl font-semibold mb-4">
+              Cancel Booking?
+            </h2>
+
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to cancel this booking for{" "}
+              <span className="font-medium">
+                {bookingToCancel.service?.title}
+              </span>
+              ?
+            </p>
+
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setBookingToCancel(null)}
+                className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
+              >
+                No
+              </button>
+
+              <button
+                onClick={() => cancelBooking(bookingToCancel._id)}
+                className="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+              >
+                Yes, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

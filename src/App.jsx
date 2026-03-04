@@ -19,6 +19,7 @@ import ScrollToTop from "./components/ScrollToTop.jsx";
 import BookingPage from "./pages/BookingPage.jsx";
 import ConfirmBookingPage from "./pages/ConfirmBookingPage.jsx";
 import ProviderAvailabilityPage from "./pages/ProviderAvailabilityPage.jsx";
+import ProviderManageBookings from "./pages/ProviderManageBookings.jsx";
 
 
 
@@ -45,6 +46,7 @@ function AnimatedRoutes() {
           <Route path="/create-service/:id" element={<CreateService />} />
           <Route path="/book/:id" element={<BookService />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/manage-bookings" element={<ProviderManageBookings />} />
           <Route path="/my-services" element={<MyServices />} />
           <Route path="/provider-dashboard" element={<ProviderDashboard />} />
           <Route path="/profile" element={<Profile />} />
