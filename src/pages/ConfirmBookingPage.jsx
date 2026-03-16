@@ -1,5 +1,6 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 function ConfirmBookingPage() {
   const { id } = useParams();
@@ -8,20 +9,31 @@ function ConfirmBookingPage() {
 
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   const { selectedDate, selectedSlot, notes } = location.state || {};
 
   /* ================= FETCH SERVICE ================= */
+
   useEffect(() => {
     const fetchService = async () => {
       try {
         const res = await fetch(
           `http://localhost:5000/api/services/${id}`
         );
+
         const data = await res.json();
+
+        if (!res.ok) {
+          toast.error(data.message || "Failed to load service");
+          return;
+        }
+
         setService(data);
+
       } catch (err) {
         console.error(err);
+        toast.error("Service fetch failed");
       } finally {
         setLoading(false);
       }
@@ -31,31 +43,70 @@ function ConfirmBookingPage() {
   }, [id]);
 
   /* ================= PLACE BOOKING ================= */
+
   const handleConfirmBooking = async () => {
+
+    if (bookingLoading) return;
+
     const token = localStorage.getItem("token");
 
-    try {
-      await fetch("http://localhost:5000/api/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          serviceId: id,
-          date: selectedDate,
-          timeSlot: selectedSlot,
-          notes
-        })
-      });
+    if (!token) {
+      toast.error("Please login first");
+      navigate("/login");
+      return;
+    }
 
-      alert("Booking Confirmed 🎉");
+    setBookingLoading(true);
+
+    const loadingToast = toast.loading("Confirming booking...");
+
+    try {
+
+      const res = await fetch(
+        "http://localhost:5000/api/bookings",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            serviceId: id,
+            date: selectedDate,
+            timeSlot: selectedSlot,
+            notes
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      toast.dismiss(loadingToast);
+
+      if (!res.ok) {
+        toast.error(data.message || "Booking failed");
+        setBookingLoading(false);
+        return;
+      }
+
+      toast.success("Booking Confirmed 🎉");
+
       navigate("/my-bookings");
 
     } catch (error) {
-      alert("Failed to book service");
+
+      toast.dismiss(loadingToast);
+      console.error(error);
+      toast.error("Failed to book service");
+
+    } finally {
+
+      setBookingLoading(false);
+
     }
   };
+
+  /* ================= VALIDATION ================= */
 
   if (!selectedDate || !selectedSlot) {
     return (
@@ -66,6 +117,8 @@ function ConfirmBookingPage() {
       </div>
     );
   }
+
+  /* ================= LOADING ================= */
 
   if (loading) {
     return (
@@ -85,7 +138,9 @@ function ConfirmBookingPage() {
         </h1>
 
         {/* Service Card */}
+
         <div className="bg-white rounded-xl shadow p-6 mb-8 flex gap-6">
+
           <img
             src={service?.image || "/default-service.jpg"}
             alt={service?.title}
@@ -93,6 +148,7 @@ function ConfirmBookingPage() {
           />
 
           <div>
+
             <h2 className="text-xl font-semibold">
               {service?.title}
             </h2>
@@ -104,10 +160,13 @@ function ConfirmBookingPage() {
             <p className="mt-3 font-semibold text-indigo-600">
               ₹ {service?.price}
             </p>
+
           </div>
+
         </div>
 
         {/* Booking Details */}
+
         <div className="bg-white rounded-xl shadow p-6 space-y-4">
 
           <div className="flex justify-between">
@@ -125,6 +184,7 @@ function ConfirmBookingPage() {
               <span className="font-medium block mb-1">
                 Notes
               </span>
+
               <p className="text-gray-600 text-sm">
                 {notes}
               </p>
@@ -135,7 +195,8 @@ function ConfirmBookingPage() {
 
       </div>
 
-      {/* Bottom Bar */}
+      {/* Bottom Booking Bar */}
+
       <div className="fixed bottom-0 left-0 w-full bg-white border-t shadow-md py-4 px-6">
 
         <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -148,6 +209,7 @@ function ConfirmBookingPage() {
           </button>
 
           <div className="hidden sm:flex items-center gap-4 text-sm">
+
             <div className="flex items-center gap-2 text-gray-400">
               <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
               Booking
@@ -159,16 +221,19 @@ function ConfirmBookingPage() {
               <div className="w-4 h-4 bg-indigo-600 rounded-full"></div>
               Confirm booking
             </div>
+
           </div>
 
           <button
+            disabled={bookingLoading}
             onClick={handleConfirmBooking}
-            className="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            className="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
           >
-            Confirm
+            {bookingLoading ? "Booking..." : "Confirm"}
           </button>
 
         </div>
+
       </div>
 
     </div>

@@ -92,7 +92,7 @@ const HomePage = () => {
             <div
               key={category.key}
               className="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-xl hover:-translate-y-2 transition cursor-pointer"
-              onClick={() => navigate(`/services/${category.key}`)}
+              onClick={() => navigate(`/shops/${category.key}`)}
             >
               <div className="flex justify-center text-indigo-600 mb-4">
                 {category.icon}
@@ -110,9 +110,9 @@ const HomePage = () => {
         </div>
       </section>
 
-      <div>
+      {/* <div>
         <FeaturedSection/>
-      </div>
+      </div> */}
 
       <div>
         <WhyChooseUs/>

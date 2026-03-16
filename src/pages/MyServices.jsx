@@ -3,13 +3,15 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function MyServices() {
+
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   /* ================= CATEGORY LABEL MAP ================= */
+
   const categoryLabels = {
     home: "Home Services",
     fitness: "Fitness & Gym",
@@ -22,8 +24,11 @@ function MyServices() {
   };
 
   /* ================= FETCH SERVICES ================= */
+
   const fetchServices = async () => {
+
     try {
+
       const res = await axios.get(
         "http://localhost:5000/api/services/my",
         {
@@ -40,6 +45,7 @@ function MyServices() {
       alert("Failed to load services");
       setLoading(false);
     }
+
   };
 
   useEffect(() => {
@@ -47,11 +53,14 @@ function MyServices() {
   }, []);
 
   /* ================= DELETE SERVICE ================= */
+
   const handleDelete = async (id) => {
+
     if (!window.confirm("Are you sure you want to delete this service?"))
       return;
 
     try {
+
       await axios.delete(
         `http://localhost:5000/api/services/${id}`,
         {
@@ -61,7 +70,6 @@ function MyServices() {
         }
       );
 
-      // Remove deleted service from UI
       setServices((prev) =>
         prev.filter((service) => service._id !== id)
       );
@@ -69,6 +77,7 @@ function MyServices() {
     } catch (error) {
       alert("Failed to delete service");
     }
+
   };
 
   if (loading) {
@@ -82,10 +91,13 @@ function MyServices() {
   }
 
   return (
+
     <div className="p-8 pt-24 pb-20 bg-gray-50 min-h-screen">
 
-      {/* Header */}
+      {/* HEADER */}
+
       <div className="flex justify-between items-center mb-10">
+
         <h2 className="text-3xl font-bold text-gray-800">
           My Services
         </h2>
@@ -96,31 +108,42 @@ function MyServices() {
         >
           + Add Service
         </button>
+
       </div>
 
-      {/* Empty State */}
+      {/* EMPTY STATE */}
+
       {services.length === 0 ? (
+
         <div className="bg-white p-8 rounded-xl shadow text-center text-gray-500">
           You haven’t created any services yet.
         </div>
+
       ) : (
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
           {services.map((service) => (
+
             <div
               key={service._id}
               className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden"
             >
-              {/* Image */}
+
+              {/* IMAGE */}
+
               <div className="h-48 overflow-hidden">
+
                 <img
                   src={service.image || "https://via.placeholder.com/400"}
                   alt={service.title}
                   className="w-full h-full object-cover"
                 />
+
               </div>
 
-              {/* Content */}
+              {/* CONTENT */}
+
               <div className="p-6">
 
                 <h3 className="text-xl font-semibold">
@@ -135,11 +158,20 @@ function MyServices() {
                   {service.description}
                 </p>
 
+                {/* PRICE */}
+
                 <p className="mt-3 font-semibold text-indigo-600">
                   ₹{service.price}
                 </p>
 
-                {/* Buttons */}
+                {/* ⭐ DURATION */}
+
+                <p className="text-sm text-gray-500">
+                  Duration: {service.duration || 30} minutes
+                </p>
+
+                {/* BUTTONS */}
+
                 <div className="flex gap-3 mt-6">
 
                   <button
@@ -150,9 +182,7 @@ function MyServices() {
                   </button>
 
                   <button
-                    onClick={() =>
-                      handleDelete(service._id)
-                    }
+                    onClick={() => handleDelete(service._id)}
                     className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
                   >
                     Delete
@@ -161,13 +191,19 @@ function MyServices() {
                 </div>
 
               </div>
+
             </div>
+
           ))}
 
         </div>
+
       )}
+
     </div>
+
   );
+
 }
 
 export default MyServices;

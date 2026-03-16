@@ -58,29 +58,20 @@ export default function MyBookings() {
 
   // cancel filter
   const canCancel = (booking) => {
-    const startTimeString = booking.timeSlot.split("-")[0];
 
-    const convertTo24Hour = (time) => {
-      const match = time.match(/(\d+):(\d+)(AM|PM)/);
-      let hours = parseInt(match[1]);
-      const minutes = parseInt(match[2]);
-      const period = match[3];
+    if (!booking.timeSlot || !booking.date) return false;
 
-      if (period === "PM" && hours !== 12) hours += 12;
-      if (period === "AM" && hours === 12) hours = 0;
+    // Get start time from slot
+    const startTime = booking.timeSlot.split("-")[0]; // "09:00"
 
-      return { hours, minutes };
-    };
+    const [hours, minutes] = startTime.split(":").map(Number);
 
-    const { hours, minutes } = convertTo24Hour(startTimeString);
-
-    // 🔥 IMPORTANT: Create local date properly
-    const [year, month, day] = booking.date.split("-");
+    const [year, month, day] = booking.date.split("-").map(Number);
 
     const bookingDateTime = new Date(
-      Number(year),
-      Number(month) - 1,
-      Number(day),
+      year,
+      month - 1,
+      day,
       hours,
       minutes,
       0
@@ -91,6 +82,7 @@ export default function MyBookings() {
     const diffInHours = (bookingDateTime - now) / (1000 * 60 * 60);
 
     return diffInHours >= 4;
+
   };
 
   /* ================= CANCEL ================= */

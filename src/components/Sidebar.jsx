@@ -38,15 +38,17 @@ function Navbar() {
   } else if (user.role === "provider") {
     menuItems = [
       { name: "Dashboard", path: "/provider-dashboard", icon: <LayoutDashboard size={20} /> },
-      { name: "Services", path: "/my-services", icon: <Briefcase size={20} /> },
-      { name: "Manage Slots", path: "/provider/manage-availability", icon: <Calendar size={20} /> },
+      // { name: "Services", path: "/my-services", icon: <Briefcase size={20} /> },
+      // { name: "Manage Slots", path: "/provider/manage-availability", icon: <Calendar size={20} /> },
       { name: "Bookings", path: "/manage-bookings", icon: <Calendar size={20} /> },
-      { name: "Profile", path: "/profile", icon: <User size={20} /> }
+      { name: "Service", path: "/my-services", icon: <Calendar size={20} /> },
+      { name: "Staff", path: "/manage-staff", icon: <Calendar size={20} /> },
+      { name: "Profile", path: "/provider-profile", icon: <User size={20} /> }
     ];
   } else {
     menuItems = [
       { name: "Home", path: "/", icon: <Home size={20} /> },
-      { name: "Services", path: "/services", icon: <Briefcase size={20} /> },
+      // { name: "Services", path: "/services", icon: <Briefcase size={20} /> },
       { name: "Bookings", path: "/my-bookings", icon: <Calendar size={20} /> },
       { name: "Profile", path: "/profile", icon: <User size={20} /> }
     ];
@@ -106,15 +108,6 @@ function Navbar() {
             >
               <LogIn size={20} />
               Login
-            </button>
-          )}
-
-          {user && (
-            <button
-              onClick={handleLogout}
-              className="text-sm text-gray-500 hover:text-red-500"
-            >
-              Logout
             </button>
           )}
         </div>

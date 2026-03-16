@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { Toaster } from "react-hot-toast";
+
 import Sidebar from "./components/Sidebar";
 import Services from "./pages/Services";
 import ProviderRegister from "./pages/ProviderRegister";
@@ -18,10 +20,12 @@ import HomePage from "./pages/Home.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import BookingPage from "./pages/BookingPage.jsx";
 import ConfirmBookingPage from "./pages/ConfirmBookingPage.jsx";
-import ProviderAvailabilityPage from "./pages/ProviderAvailabilityPage.jsx";
 import ProviderManageBookings from "./pages/ProviderManageBookings.jsx";
-
-
+import ProviderStaffManagement from "./pages/ProviderStaffManagement.jsx";
+import ProviderShopSettings from "./pages/ProviderShopSettings.jsx";
+import ProviderProfile from "./pages/ProviderProfile.jsx";
+import Shops from "./pages/Shops.jsx";
+import ShopServices from "./pages/ShopServices.jsx";
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -47,6 +51,7 @@ function AnimatedRoutes() {
           <Route path="/book/:id" element={<BookService />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/manage-bookings" element={<ProviderManageBookings />} />
+          <Route path="/manage-staff" element={<ProviderStaffManagement />} />
           <Route path="/my-services" element={<MyServices />} />
           <Route path="/provider-dashboard" element={<ProviderDashboard />} />
           <Route path="/profile" element={<Profile />} />
@@ -54,7 +59,10 @@ function AnimatedRoutes() {
           <Route path="/services/:category/:service" element={<ProvidersPage />} />
           <Route path="/booking/:id" element={<BookingPage />} />
           <Route path="/confirm-booking/:id" element={<ConfirmBookingPage />} />
-          <Route path="/provider/manage-availability" element={<ProviderAvailabilityPage />} />
+          <Route path="/provider/manage-availability" element={<ProviderShopSettings />} />
+          <Route path="/provider-profile" element={<ProviderProfile />} />
+          <Route path="/shops/:category" element={<Shops />} />
+          <Route path="/shop-services/:shopId" element={<ShopServices />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
@@ -64,9 +72,22 @@ function AnimatedRoutes() {
 function App() {
   return (
     <Router>
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#333",
+            color: "#fff"
+          }
+        }}
+      />
+
       <div className="flex">
-        <ScrollToTop/>
+        <ScrollToTop />
         <Sidebar />
+
         <main className="flex-1 bg-gray-100 min-h-screen mt-10">
           <AnimatedRoutes />
         </main>

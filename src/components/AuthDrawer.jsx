@@ -56,7 +56,20 @@ function AuthDrawer({ isOpen, onClose, onSuccess }) {
 
       const res = await axios.post(url, payload);
 
+      /* ================= STORE AUTH DATA ================= */
+
+      // 1️⃣ Store token
       localStorage.setItem("token", res.data.token);
+
+      // 2️⃣ Store userId (important for socket & admin)
+      if (res.data.user?._id) {
+        localStorage.setItem("userId", res.data.user._id);
+      }
+
+      // 3️⃣ Store role (useful for navbar & route guards)
+      if (res.data.user?.role) {
+        localStorage.setItem("role", res.data.user.role);
+      }
 
       setLoading(false);
       handleClose();
@@ -109,8 +122,8 @@ function AuthDrawer({ isOpen, onClose, onSuccess }) {
 
         <p className="text-gray-500 mt-2">
           {mode === "login"
-            ? "Login to your Fixail account"
-            : "Create your Fixail account"}
+            ? "Login to your BookingApp account"
+            : "Create your BookingApp account"}
         </p>
 
         <div className="w-12 h-[2px] bg-gray-800 mt-4 mb-8"></div>
