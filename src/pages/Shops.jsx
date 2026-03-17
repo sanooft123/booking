@@ -13,7 +13,7 @@ function Shops() {
     const fetchShops = async () => {
 
       const res = await fetch(
-        `http://localhost:5000/api/services/shops/${category}`
+        `https://servist.onrender.com/api/services/shops/${category}`
       );
 
       const data = await res.json();

@@ -27,7 +27,7 @@ function ProviderAvailabilityPage() {
     const fetchProvider = async () => {
 
       const res = await fetch(
-        "http://localhost:5000/api/users/me",
+        "https://servist.onrender.com/api/users/me",
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -56,7 +56,7 @@ function ProviderAvailabilityPage() {
     setLoading(true);
 
     await fetch(
-      "http://localhost:5000/api/users/shop-timing",
+      "https://servist.onrender.com/api/users/shop-timing",
       {
         method: "PUT",
         headers: {

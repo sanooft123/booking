@@ -19,7 +19,7 @@ function ConfirmBookingPage() {
     const fetchService = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/services/${id}`
+          `https://servist.onrender.com/api/services/${id}`
         );
 
         const data = await res.json();
@@ -63,7 +63,7 @@ function ConfirmBookingPage() {
     try {
 
       const res = await fetch(
-        "http://localhost:5000/api/bookings",
+        "https://servist.onrender.com/api/bookings",
         {
           method: "POST",
           headers: {

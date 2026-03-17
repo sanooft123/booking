@@ -21,7 +21,7 @@ function BookingPage() {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:5000/api/bookings/service-slots?serviceId=${id}&date=${date}`,
+        `https://servist.onrender.com/api/bookings/service-slots?serviceId=${id}&date=${date}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

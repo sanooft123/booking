@@ -25,7 +25,7 @@ export default function Services() {
       setLoading(true);
 
       const res = await axios.get(
-        `http://localhost:5000/api/services`,
+        `https://servist.onrender.com/api/services`,
         {
           params: {
             city,

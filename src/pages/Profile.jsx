@@ -24,7 +24,7 @@ export default function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/profile", {
+        const res = await fetch("https://servist.onrender.com/api/profile", {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -44,7 +44,7 @@ export default function Profile() {
   // 🔥 Update Profile
   const handleSave = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/profile", {
+      const res = await fetch("https://servist.onrender.com/api/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -72,7 +72,7 @@ export default function Profile() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/profile/wallet", {
+      const res = await fetch("https://servist.onrender.com/api/profile/wallet", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -30,7 +30,7 @@ function AuthDrawer({ isOpen, onClose, onSuccess }) {
     e.preventDefault();
     try {
       setLoading(true);
-      await axios.post("http://localhost:5000/api/otp/send-otp", { phone });
+      await axios.post("https://servist.onrender.com/api/otp/send-otp", { phone });
       setStep(2);
       setLoading(false);
     } catch {
@@ -46,8 +46,8 @@ function AuthDrawer({ isOpen, onClose, onSuccess }) {
 
       const url =
         mode === "register"
-          ? "http://localhost:5000/api/otp/register"
-          : "http://localhost:5000/api/otp/verify-otp";
+          ? "https://servist.onrender.com/api/otp/register"
+          : "https://servist.onrender.com/api/otp/verify-otp";
 
       const payload =
         mode === "register"

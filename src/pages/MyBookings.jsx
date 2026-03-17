@@ -16,12 +16,12 @@ export default function MyBookings() {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [loading, setLoading] = useState(true);
   
-
+//"http://localhost:5000/api/bookings/my",
   /* ================= FETCH BOOKINGS ================= */
   const fetchBookings = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/bookings/my",
+        "https://servist.onrender.com/api/bookings/my",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -89,7 +89,7 @@ export default function MyBookings() {
   const cancelBooking = async (id) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/bookings/${id}/cancel`,
+        `https://servist.onrender.com/api/bookings/${id}/cancel`,
         {},
         {
           headers: {

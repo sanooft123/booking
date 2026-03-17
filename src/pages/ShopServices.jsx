@@ -25,7 +25,7 @@ export default function ShopServices() {
       setLoading(true);
 
       const res = await axios.get(
-        `http://localhost:5000/api/services/provider/${shopId}`
+        `https://servist.onrender.com/api/services/provider/${shopId}`
       );
 
       const data = res.data;

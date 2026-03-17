@@ -30,7 +30,7 @@ function MyServices() {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/services/my",
+        "https://servist.onrender.com/api/services/my",
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -62,7 +62,7 @@ function MyServices() {
     try {
 
       await axios.delete(
-        `http://localhost:5000/api/services/${id}`,
+        `https://servist.onrender.com/api/services/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

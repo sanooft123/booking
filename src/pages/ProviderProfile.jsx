@@ -32,7 +32,7 @@ export default function ProviderProfile() {
       try {
 
         const res = await fetch(
-          "http://localhost:5000/api/profile",
+          "https://servist.onrender.com/api/profile",
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -62,7 +62,7 @@ export default function ProviderProfile() {
     try {
 
       const res = await fetch(
-        "http://localhost:5000/api/profile",
+        "https://servist.onrender.com/api/profile",
         {
           method: "PUT",
           headers: {

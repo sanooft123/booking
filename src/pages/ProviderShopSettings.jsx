@@ -17,7 +17,7 @@ function ProviderShopSettings() {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/users/me",
+        "https://servist.onrender.com/api/users/me",
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -37,7 +37,7 @@ function ProviderShopSettings() {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/services/my",
+        "https://servist.onrender.com/api/services/my",
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -64,7 +64,7 @@ function ProviderShopSettings() {
       setLoading(true);
 
       await axios.put(
-        "http://localhost:5000/api/users/shop-timing",
+        "https://servist.onrender.com/api/users/shop-timing",
         { shopOpen, shopClose },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -88,7 +88,7 @@ function ProviderShopSettings() {
     try {
 
       await axios.put(
-        `http://localhost:5000/api/services/${serviceId}/duration`,
+        `https://servist.onrender.com/api/services/${serviceId}/duration`,
         { duration },
         {
           headers: { Authorization: `Bearer ${token}` }

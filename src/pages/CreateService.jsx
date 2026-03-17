@@ -40,7 +40,7 @@ function CreateService() {
       try {
 
         const res = await axios.get(
-          `http://localhost:5000/api/services/${id}`,
+          `https://servist.onrender.com/api/services/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }
@@ -85,7 +85,7 @@ function CreateService() {
       if (isEdit) {
 
         await axios.put(
-          `http://localhost:5000/api/services/${id}`,
+          `https://servist.onrender.com/api/services/${id}`,
           {
             title,
             description,
@@ -104,7 +104,7 @@ function CreateService() {
       } else {
 
         await axios.post(
-          "http://localhost:5000/api/services",
+          "https://servist.onrender.com/api/services",
           {
             title,
             description,

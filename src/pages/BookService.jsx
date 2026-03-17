@@ -12,7 +12,7 @@ function BookService() {
   const handleBooking = async () => {
     try {
       await axios.post(
-        "http://localhost:5000/api/bookings",
+        "https://servist.onrender.com/api/bookings",
         {
           serviceId: id,
           date,

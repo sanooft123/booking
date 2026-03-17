@@ -22,7 +22,7 @@ const CategoryPage = () => {
         setLoading(true);
 
         const res = await fetch(
-          `http://localhost:5000/api/services?category=${category}&location=${location}`
+          `https://servist.onrender.com/api/services?category=${category}&location=${location}`
         );
 
         const data = await res.json();

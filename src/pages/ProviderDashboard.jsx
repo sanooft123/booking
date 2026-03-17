@@ -38,7 +38,7 @@ function ProviderDashboard() {
       setLoading(true);
 
       const res = await axios.get(
-        `http://localhost:5000/api/dashboard?filter=${filter}`,
+        `https://servist.onrender.com/api/dashboard?filter=${filter}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -56,7 +56,7 @@ function ProviderDashboard() {
   const fetchTrend = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/dashboard/revenue-trend",
+        "https://servist.onrender.com/api/dashboard/revenue-trend",
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -69,7 +69,7 @@ function ProviderDashboard() {
 
   /* ================= SOCKET REAL-TIME ================= */
   useEffect(() => {
-    const socket = io("http://localhost:5000");
+    const socket = io("https://servist.onrender.com");
 
     socket.on("new-booking", (payload) => {
       if (payload.providerId === userId) {

@@ -12,7 +12,7 @@ function CustomerLogin() {
   const sendOtp = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/otp/send-otp", {
+      await axios.post("https://servist.onrender.com/api/otp/send-otp", {
         phone
       });
       setStep(2);
@@ -25,7 +25,7 @@ function CustomerLogin() {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/otp/verify-otp",
+        "https://servist.onrender.com/api/otp/verify-otp",
         { phone, otp }
       );
 

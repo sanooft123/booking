@@ -18,7 +18,7 @@ export default function ProviderStaffManagement() {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/staff/my",
+        "https://servist.onrender.com/api/staff/my",
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -49,7 +49,7 @@ export default function ProviderStaffManagement() {
     try {
 
       await axios.post(
-        "http://localhost:5000/api/staff/create",
+        "https://servist.onrender.com/api/staff/create",
         { name, phone, workStart, workEnd },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -77,7 +77,7 @@ export default function ProviderStaffManagement() {
     try {
 
       await axios.delete(
-        `http://localhost:5000/api/staff/${id}`,
+        `https://servist.onrender.com/api/staff/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }

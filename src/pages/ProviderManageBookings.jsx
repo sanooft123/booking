@@ -24,7 +24,7 @@ export default function ProviderManageBookings() {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/bookings/my",
+        "https://servist.onrender.com/api/bookings/my",
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -76,7 +76,7 @@ export default function ProviderManageBookings() {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/bookings/available-staff",
+        "https://servist.onrender.com/api/bookings/available-staff",
         {
           params: {
             date: booking.date,
@@ -101,7 +101,7 @@ export default function ProviderManageBookings() {
     try {
 
       await axios.put(
-        `http://localhost:5000/api/bookings/${id}/status`,
+        `https://servist.onrender.com/api/bookings/${id}/status`,
         { status },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -139,7 +139,7 @@ export default function ProviderManageBookings() {
     try {
 
       await axios.put(
-        `http://localhost:5000/api/bookings/assign-staff/${selectedBooking._id}`,
+        `https://servist.onrender.com/api/bookings/assign-staff/${selectedBooking._id}`,
         { staffId: selectedStaffId },
         {
           headers: { Authorization: `Bearer ${token}` }
