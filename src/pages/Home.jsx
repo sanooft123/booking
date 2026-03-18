@@ -14,6 +14,7 @@ import {
 import FeaturedSection from "../components/FeatureServices";
 import WhyChooseUs from "../components/WhyChooseUs";
 import Footer from "../components/Footer";
+import heroImg from "../assets/hero.svg";
 
 const categories = [
   { key: "home", title: "Home Services", icon: <Home size={40} /> },
@@ -35,52 +36,69 @@ const HomePage = () => {
 
 
       {/* Hero Section */}
-      <section className="text-center px-6 py-24 relative overflow-hidden">
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-gray-50 px-6 py-20">
 
-        <h1 className="text-4xl md:text-6xl font-bold text-gray-800 leading-tight">
-          Book Professional Services <br /> Near You
-        </h1>
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
 
-        <p className="mt-20 text-lg text-gray-600 max-w-2xl mx-auto">
-          Find trusted local professionals for all your home service needs. Fast, reliable, and affordable.
-        </p>
-        {/* Search Bar */}
-            <div className="bg-white rounded-xl p-2 flex flex-col border-1 sm:flex-row gap-2 shadow-xl mt-10 md:mx-40">
+          {/* LEFT CONTENT */}
+          <div className="text-center md:text-left">
+
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-800 leading-tight">
+              Book Professional <br />
+              Services Near You
+            </h1>
+
+            <p className="mt-6 text-lg text-gray-600 max-w-xl">
+              Find trusted local professionals for all your home service needs.
+              Fast, reliable, and affordable.
+            </p>
+
+            {/* SEARCH BAR */}
+            <div className="bg-white rounded-xl p-2 flex flex-col sm:flex-row gap-2 shadow-xl mt-8 max-w-xl">
+
               <div className="flex-1 flex items-center gap-3 px-4">
                 <Search className="w-5 h-5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="What service do you need?"
-                  // value={searchQuery}
-                  // onChange={(e) => setSearchQuery(e.target.value)}
                   className="flex-1 py-2 outline-none text-gray-900"
                 />
               </div>
 
               <Link
-                // to={`/services${searchQuery ? `?q=${searchQuery}` : ""}`}
-                className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition text-center"
+                className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition text-center"
               >
                 Search
               </Link>
             </div>
 
-        {/* Floating Cards Effect */}
-        <div className="mt-20 relative flex justify-center">
-
-          <div className="absolute -left-20 rotate-[-10deg] bg-white shadow-xl rounded-2xl w-64 h-40 hidden md:block"></div>
-
-          <div className="absolute left-10 rotate-[8deg] bg-white shadow-xl rounded-2xl w-64 h-40 hidden md:block"></div>
-
-          <div className="bg-white shadow-2xl rounded-2xl w-72 h-44 z-10 flex items-center justify-center font-semibold text-gray-600">
-            Service Providers Dashboard
           </div>
 
-          <div className="absolute right-10 rotate-[-8deg] bg-white shadow-xl rounded-2xl w-64 h-40 hidden md:block"></div>
+          {/* RIGHT SIDE CARTOON IMAGE */}
+          <div className="relative flex justify-center">
 
-          <div className="absolute -right-20 rotate-[10deg] bg-white shadow-xl rounded-2xl w-64 h-40 hidden md:block"></div>
+            <img
+              src={heroImg}
+              alt="service illustration"
+              className="w-[90%] max-w-md animate-float"
+            />
 
+            {/* FLOATING BADGES */}
+            <div className="absolute top-10 left-0 bg-white px-4 py-2 rounded-xl shadow-md text-sm">
+              ⭐ Trusted Services
+            </div>
+
+            <div className="absolute bottom-10 right-0 bg-white px-4 py-2 rounded-xl shadow-md text-sm">
+              ⚡ Fast Booking
+            </div>
+
+          </div>
         </div>
+
+        {/* DECORATIVE BLUR */}
+        <div className="absolute -top-20 -right-20 w-72 h-72 bg-indigo-200 rounded-full blur-3xl opacity-40"></div>
+        <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-purple-200 rounded-full blur-3xl opacity-40"></div>
+
       </section>
 
       {/* Categories */}

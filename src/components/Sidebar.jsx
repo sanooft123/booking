@@ -11,6 +11,7 @@ import {
 import { getUserFromToken } from "../utils/auth";
 import { useState } from "react";
 import AuthDrawer from "../components/AuthDrawer";
+import logo from "../assets/logo.png"
 
 function Navbar() {
   const location = useLocation();
@@ -65,7 +66,7 @@ function Navbar() {
             to="/"
             className="text-xl md:text-2xl font-bold text-indigo-600"
           >
-            BookingApp
+            <img src={logo} alt="" className="w-24 md:w-32" />
           </Link>
 
           {/* Location (Only for customer/guest) */}

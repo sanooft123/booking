@@ -12,7 +12,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <h2 className="text-2xl font-bold text-white mb-4">
-              ServiceHub
+              Servist
             </h2>
             <p className="text-gray-400 leading-relaxed">
               Your trusted platform for booking professional services nearby.

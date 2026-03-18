@@ -8,7 +8,7 @@ export function WhyChooseUs() {
         {/* Heading */}
         <div className="text-center mb-20">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Why Choose Bookify?
+            Why Choose Servist?
           </h2>
           <p className="text-lg text-gray-600">
             We make it easy to find and book quality services
