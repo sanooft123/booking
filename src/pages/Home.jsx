@@ -14,7 +14,8 @@ import {
 import FeaturedSection from "../components/FeatureServices";
 import WhyChooseUs from "../components/WhyChooseUs";
 import Footer from "../components/Footer";
-import heroImg from "../assets/hero.svg";
+import heroImg from "../assets/bookhome.png";
+import Offers from "../components/OfferSection";
 
 const categories = [
   { key: "home", title: "Home Services", icon: <Home size={40} /> },
@@ -36,7 +37,7 @@ const HomePage = () => {
 
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-gray-50 px-6 py-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-gray-50 px-6 py-10">
 
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
 
@@ -49,7 +50,7 @@ const HomePage = () => {
             </h1>
 
             <p className="mt-6 text-lg text-gray-600 max-w-xl">
-              Find trusted local professionals for all your home service needs.
+              Find trusted local professionals for all your service needs.
               Fast, reliable, and affordable.
             </p>
 
@@ -74,8 +75,33 @@ const HomePage = () => {
 
           </div>
 
+
+          {/* RIGHT SIDE IMAGE */}
+          <div className="relative flex justify-center md:justify-end">
+
+            <img
+              src={heroImg}
+              alt="service illustration"
+              className="w-[80%] sm:w-[70%] md:w-[90%] max-w-md lg:max-w-lg"
+            />
+
+            {/* Floating Badge 1 */}
+            <div className="hidden sm:block absolute top-10 left-0 bg-white px-4 py-2 rounded-xl shadow-md text-sm">
+              ⭐ Trusted Services
+            </div>
+
+            {/* Floating Badge 2 */}
+            <div className="hidden sm:block absolute bottom-10 right-0 bg-white px-4 py-2 rounded-xl shadow-md text-sm">
+              ⚡ Fast Booking
+            </div>
+
+          </div>
+
+
+
           {/* RIGHT SIDE CARTOON IMAGE */}
-          <div className="relative flex justify-center">
+          {/* <div className="relative flex justify-center">
+
 
             <img
               src={heroImg}
@@ -83,7 +109,6 @@ const HomePage = () => {
               className="w-[90%] max-w-md animate-float"
             />
 
-            {/* FLOATING BADGES */}
             <div className="absolute top-10 left-0 bg-white px-4 py-2 rounded-xl shadow-md text-sm">
               ⭐ Trusted Services
             </div>
@@ -92,7 +117,7 @@ const HomePage = () => {
               ⚡ Fast Booking
             </div>
 
-          </div>
+          </div> */}
         </div>
 
         {/* DECORATIVE BLUR */}
@@ -102,7 +127,7 @@ const HomePage = () => {
       </section>
 
       {/* Categories */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
+      <section className="max-w-6xl mx-auto px-6 py-10">
          <h2 className="text-center justify-center text-3xl font-bold my-6">Popular Categories</h2>
          <p className="text-center justify-center text-md font-light my-6">Browse services by category</p>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -127,6 +152,12 @@ const HomePage = () => {
           ))}
         </div>
       </section>
+
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <Offers />
+        </div>
+      </div>
 
       {/* <div>
         <FeaturedSection/>
