@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Home,
   Sparkles,
@@ -8,24 +8,24 @@ import {
   Shirt,
   PartyPopper,
   Wrench,
-  Dumbbell,
-  Search
+  Dumbbell
 } from "lucide-react";
-import FeaturedSection from "../components/FeatureServices";
+
 import WhyChooseUs from "../components/WhyChooseUs";
 import Footer from "../components/Footer";
-import heroImg from "../assets/bookhome.png";
 import Offers from "../components/OfferSection";
 
 const categories = [
-  { key: "home", title: "Home Services", icon: <Home size={40} /> },
-  { key: "fitness", title: "Fitness & Gym", icon: <Dumbbell size={40} /> },
-  { key: "beauty", title: "Beauty & Salon", icon: <Sparkles size={40} /> },
-  { key: "healthcare", title: "Healthcare", icon: <HeartPulse size={40} /> },
-  { key: "automobile", title: "Automobile Services", icon: <Car size={40} /> },
-  { key: "laundry", title: "Laundry Services", icon: <Shirt size={40} /> },
-  { key: "entertainment", title: "Entertainment", icon: <PartyPopper size={40} /> },
-  { key: "repairs", title: "Repairs & Maintenance", icon: <Wrench size={40} /> }
+  { key: "home", title: "Home Services", icon: <Home size={32} /> },
+  { key: "fitness", title: "Fitness & Gym", icon: <Dumbbell size={32} /> },
+  { key: "beauty", title: "Beauty & Salon", icon: <Sparkles size={32} /> },
+  { key: "healthcare", title: "Healthcare", icon: <HeartPulse size={32} /> },
+  { key: "automobile", title: "Automobile", icon: <Car size={32} /> },
+  { key: "electrical", title: "Electrical Work", icon: <Wrench size={32} /> },
+  { key: "plumbing", title: "Plumbing Work", icon: <Wrench size={32} /> },
+  { key: "laundry", title: "Laundry", icon: <Shirt size={32} /> },
+  { key: "entertainment", title: "Entertainment", icon: <PartyPopper size={32} /> },
+  { key: "repairs", title: "Repairs", icon: <Wrench size={32} /> }
 ];
 
 const HomePage = () => {
@@ -34,147 +34,96 @@ const HomePage = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
 
+      {/* 🔥 HERO WITH CATEGORIES */}
+      <section className="px-6 py-8 bg-white">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-start mt-10">
 
+          {/* LEFT */}
+          <div>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 to-gray-50 px-6 py-10">
-
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-
-          {/* LEFT CONTENT */}
-          <div className="text-center md:text-left">
-
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-800 leading-tight">
-              Book Professional <br />
-              Services Near You
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Home services at your doorstep
             </h1>
 
-            <p className="mt-6 text-lg text-gray-600 max-w-xl">
-              Find trusted local professionals for all your service needs.
-              Fast, reliable, and affordable.
-            </p>
+            {/* SEARCH */}
+            <div className="flex items-center bg-gray-100 rounded-xl px-4 py-3 mb-6">
+              <input
+                type="text"
+                placeholder="Search for services..."
+                className="bg-transparent outline-none w-full text-gray-700"
+              />
+            </div>
 
-            {/* SEARCH BAR */}
-            <div className="bg-white rounded-xl p-2 flex flex-col sm:flex-row gap-2 shadow-xl mt-8 max-w-xl">
+            {/* ✅ CATEGORIES GRID */}
+            <div className="grid grid-cols-3 gap-4">
+              {categories.map((category) => (
+                <div
+                  key={category.key}
+                  onClick={() => navigate(`/shops/${category.key}`)}
+                  className="flex flex-col items-center justify-center bg-gray-50 border rounded-xl p-5 hover:shadow-md hover:bg-gray-100 hover:scale-105 cursor-pointer transition"
+                >
+                  <div className="text-indigo-600 mb-2">
+                    {category.icon}
+                  </div>
 
-              <div className="flex-1 flex items-center gap-3 px-4">
-                <Search className="w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="What service do you need?"
-                  className="flex-1 py-2 outline-none text-gray-900"
-                />
-              </div>
-
-              <Link
-                className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition text-center"
-              >
-                Search
-              </Link>
+                  <p className="text-sm text-center font-medium text-gray-800">
+                    {category.title}
+                  </p>
+                </div>
+              ))}
             </div>
 
           </div>
 
+          {/* RIGHT IMAGE GRID */}
+          <div className="grid grid-cols-2 gap-4 mt-10">
 
-          {/* RIGHT SIDE IMAGE */}
-          <div className="relative flex justify-center md:justify-end">
-
+            {/* Image 1 */}
             <img
-              src={heroImg}
-              alt="service illustration"
-              className="w-[80%] sm:w-[70%] md:w-[90%] max-w-md lg:max-w-lg"
+              src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1"
+              className="rounded-xl h-full object-cover"
+              alt=""
             />
 
-            {/* Floating Badge 1 */}
-            <div className="hidden sm:block absolute top-10 left-0 bg-white px-4 py-2 rounded-xl shadow-md text-sm">
-              ⭐ Trusted Services
-            </div>
-
-            {/* Floating Badge 2 */}
-            <div className="hidden sm:block absolute bottom-10 right-0 bg-white px-4 py-2 rounded-xl shadow-md text-sm">
-              ⚡ Fast Booking
+            {/* Image 2 */}
+            <div >
+              <img
+              src="https://static.vecteezy.com/system/resources/thumbnails/071/837/068/small/technician-repairing-white-wall-mounted-air-conditioner-in-modern-indoor-setting-free-photo.jpg"
+              className="rounded-xl mb-6  object-cover"
+              alt=""
+              />
+              <img
+              src="https://images.unsplash.com/photo-1581578731548-c64695cc6952"
+              className="rounded-xl object-cover col-start-2 h-48 w-full"
+              alt=""
+            />
             </div>
 
           </div>
 
-
-
-          {/* RIGHT SIDE CARTOON IMAGE */}
-          {/* <div className="relative flex justify-center">
-
-
-            <img
-              src={heroImg}
-              alt="service illustration"
-              className="w-[90%] max-w-md animate-float"
-            />
-
-            <div className="absolute top-10 left-0 bg-white px-4 py-2 rounded-xl shadow-md text-sm">
-              ⭐ Trusted Services
-            </div>
-
-            <div className="absolute bottom-10 right-0 bg-white px-4 py-2 rounded-xl shadow-md text-sm">
-              ⚡ Fast Booking
-            </div>
-
-          </div> */}
-        </div>
-
-        {/* DECORATIVE BLUR */}
-        <div className="absolute -top-20 -right-20 w-72 h-72 bg-indigo-200 rounded-full blur-3xl opacity-40"></div>
-        <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-purple-200 rounded-full blur-3xl opacity-40"></div>
-
-      </section>
-
-      {/* Categories */}
-      <section className="max-w-6xl mx-auto px-6 py-10">
-         <h2 className="text-center justify-center text-3xl font-bold my-6">Popular Categories</h2>
-         <p className="text-center justify-center text-md font-light my-6">Browse services by category</p>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {categories.map((category) => (
-            <div
-              key={category.key}
-              className="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-xl hover:-translate-y-2 transition cursor-pointer"
-              onClick={() => navigate(`/shops/${category.key}`)}
-            >
-              <div className="flex justify-center text-indigo-600 mb-4">
-                {category.icon}
-              </div>
-
-              <h3 className="text-lg font-semibold">
-                {category.title}
-              </h3>
-
-              <button className="mt-3 text-indigo-600 hover:underline">
-                View Services →
-              </button>
-            </div>
-          ))}
         </div>
       </section>
 
+
+
+
+      {/* OFFERS */}
       <div className="w-full flex justify-center">
         <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <Offers />
         </div>
       </div>
 
-      {/* <div>
-        <FeaturedSection/>
-      </div> */}
 
-      <div>
-        <WhyChooseUs/>
-      </div>
+      {/* WHY CHOOSE US */}
+      <WhyChooseUs />
 
-      {/* CTA Section */}
+
+      {/* CTA */}
       <section className="bg-indigo-700 text-white text-center py-16 px-6">
         <h2 className="text-3xl font-bold">
           Need a Service Today?
         </h2>
-        <p className="mt-3">
-          Find verified professionals near you and book instantly.
-        </p>
 
         <div className="mt-8 flex flex-col md:flex-row justify-center gap-4">
           <button
@@ -188,14 +137,14 @@ const HomePage = () => {
             onClick={() => navigate("/provider-login")}
             className="border-2 border-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-indigo-700 transition"
           >
-            Are You a Service Provider? Login Here
+            Provider Login
           </button>
         </div>
       </section>
 
-      <div>
-        <Footer/>
-      </div>
+
+      {/* FOOTER */}
+      <Footer />
 
     </div>
   );
