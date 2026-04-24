@@ -8,19 +8,20 @@ import {
   Home,
   MapPin,
   ShoppingCart,
-  Search,
   ChevronDown
 } from "lucide-react";
 import { getUserFromToken } from "../utils/auth";
 import { useState, useEffect } from "react";
 import AuthDrawer from "../components/AuthDrawer";
 import logo from "../assets/logo.png";
+import CartModal from "../components/CartModal";
 
 function Navbar() {
   const location = useLocation();
   const user = getUserFromToken();
 
   const [showAuth, setShowAuth] = useState(false);
+  const [showCart, setShowCart] = useState(false); // ✅ FIX ADDED
   const [city, setCity] = useState(
     localStorage.getItem("userLocation") || "Select Location"
   );
@@ -56,28 +57,41 @@ function Navbar() {
     ];
   }
 
+  // 🛒 DUMMY CART (replace later with API)
+  const cartItems = [
+    {
+      name: "AC Repair",
+      date: "25 Apr 2026",
+      time: "10:00 AM",
+      price: 499
+    },
+    {
+      name: "Electrician Visit",
+      date: "26 Apr 2026",
+      time: "2:00 PM",
+      price: 299
+    }
+  ];
+
   return (
     <>
       {/* ================= TOP NAVBAR ================= */}
       <div className="fixed top-0 left-0 w-full bg-white border-b z-50">
-
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
 
           {/* LOGO */}
           <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="logo" className="w-50 h-10 object-contain" />
-            {/* <span className="text-xl font-bold text-indigo-600">Servist</span> */}
+            <img src={logo} alt="logo" className="w-28 h-10 object-contain" />
           </Link>
 
-            {/* LOCATION */}
-            <div className="hidden sm:flex items-center gap-1 text-sm cursor-pointer text-gray-600">
-              <MapPin size={16} />
-              {city}
-            </div>
+          {/* LOCATION */}
+          <div className="hidden sm:flex items-center gap-1 text-sm cursor-pointer text-gray-600">
+            <MapPin size={16} />
+            {city}
+          </div>
 
           {/* RIGHT SECTION */}
           <div className="flex items-center gap-6">
-
 
             {/* DESKTOP MENU */}
             <div className="hidden md:flex items-center gap-4">
@@ -101,12 +115,15 @@ function Navbar() {
 
             {/* CART */}
             {!user || user.role !== "provider" ? (
-              <Link to="/cart" className="relative">
+              <button
+                onClick={() => setShowCart(true)}
+                className="relative"
+              >
                 <ShoppingCart className="w-5 h-5 text-gray-700" />
                 <span className="absolute -top-2 -right-2 text-xs bg-indigo-600 text-white px-1 rounded-full">
-                  2
+                  {cartItems.length}
                 </span>
-              </Link>
+              </button>
             ) : null}
 
             {/* LOGIN / PROFILE */}
@@ -165,76 +182,34 @@ function Navbar() {
 
         {user?.role === "provider" ? (
           <>
-            <Link
-              to="/provider-dashboard"
-              className={`flex flex-col items-center text-xs ${
-                location.pathname === "/provider-dashboard"
-                  ? "text-indigo-600 border-t-2 border-indigo-600 pt-1"
-                  : "text-gray-500"
-              }`}
-            >
+            <Link to="/provider-dashboard" className="flex flex-col items-center text-xs text-gray-500">
               <LayoutDashboard size={22} />
               <span>Dashboard</span>
             </Link>
 
-            <Link
-              to="/manage-bookings"
-              className={`flex flex-col items-center text-xs ${
-                location.pathname === "/manage-bookings"
-                  ? "text-indigo-600 border-t-2 border-indigo-600 pt-1"
-                  : "text-gray-500"
-              }`}
-            >
+            <Link to="/manage-bookings" className="flex flex-col items-center text-xs text-gray-500">
               <Calendar size={22} />
               <span>Bookings</span>
             </Link>
 
-            <Link
-              to="/provider-profile"
-              className={`flex flex-col items-center text-xs ${
-                location.pathname === "/provider-profile"
-                  ? "text-indigo-600 border-t-2 border-indigo-600 pt-1"
-                  : "text-gray-500"
-              }`}
-            >
+            <Link to="/provider-profile" className="flex flex-col items-center text-xs text-gray-500">
               <User size={22} />
               <span>Profile</span>
             </Link>
           </>
         ) : (
           <>
-            <Link
-              to="/"
-              className={`flex flex-col items-center text-xs ${
-                location.pathname === "/"
-                  ? "text-indigo-600 border-t-2 border-indigo-600 pt-1"
-                  : "text-gray-500"
-              }`}
-            >
+            <Link to="/" className="flex flex-col items-center text-xs text-gray-500">
               <Home size={22} />
               <span>Home</span>
             </Link>
 
-            <Link
-              to="/my-bookings"
-              className={`flex flex-col items-center text-xs ${
-                location.pathname === "/my-bookings"
-                  ? "text-indigo-600 border-t-2 border-indigo-600 pt-1"
-                  : "text-gray-500"
-              }`}
-            >
+            <Link to="/my-bookings" className="flex flex-col items-center text-xs text-gray-500">
               <Calendar size={22} />
               <span>Bookings</span>
             </Link>
 
-            <Link
-              to="/profile"
-              className={`flex flex-col items-center text-xs ${
-                location.pathname === "/profile"
-                  ? "text-indigo-600 border-t-2 border-indigo-600 pt-1"
-                  : "text-gray-500"
-              }`}
-            >
+            <Link to="/profile" className="flex flex-col items-center text-xs text-gray-500">
               <User size={22} />
               <span>Profile</span>
             </Link>
@@ -251,6 +226,14 @@ function Navbar() {
           </button>
         )}
       </div>
+
+
+      {/* ================= CART MODAL ================= */}
+      <CartModal
+        isOpen={showCart}
+        onClose={() => setShowCart(false)}
+        cartItems={cartItems}
+      />
 
 
       {/* ================= AUTH DRAWER ================= */}
